@@ -69,7 +69,7 @@ func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	} else {
 		port := 4000
 		c := testRequest.Spec.Cluster
-		conn = fmt.Sprintf("%s%s-tidb.%s.svc:%d", protocol, c.Name, c.Namespace, port)
+		conn = fmt.Sprintf("%s%s-tidb.%s.svc:%d/%s", protocol, c.Name, c.Namespace, port, *testRequest.Spec.Database)
 	}
 
 	constructJob := func(request benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
