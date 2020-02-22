@@ -17,15 +17,9 @@ package controllers
 
 import (
 	"context"
-	"fmt"
-	"strconv"
-	"time"
-
 	"github.com/go-logr/logr"
 	benchmarktidbpingcapcomv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
 	batchv1 "k8s.io/api/batch/v1"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -44,69 +38,28 @@ type TpccBenchmarkReconciler struct {
 func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 	log := r.Log.WithValues("benchmarksql", req.NamespacedName)
-	// your logic here
-	//ctrl.CreateOrUpdate()
-	var testRequest benchmarktidbpingcapcomv1alpha1.TpccBenchmark
-	if err := r.Get(ctx, req.NamespacedName, &testRequest); err != nil {
-		log.Error(err, "unable to fetch testRequest")
+	var benchmark benchmarktidbpingcapcomv1alpha1.TpccBenchmark
+	if err := r.Get(ctx, req.NamespacedName, &benchmark); err != nil {
+		log.Error(err, "unable to fetch benchmark")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
-	var childJobs batchv1.JobList
-	if err := r.List(ctx, &childJobs); err != nil {
-		log.Error(err, "unable to list child Jobs")
-		return ctrl.Result{}, err
-	}
-	constructJob := func(request benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
-		// We want job names for a given nominal start time to have a deterministic name to avoid the same job being created twice
-		name := fmt.Sprintf("test")
-
-		job := &batchv1.Job{
-			ObjectMeta: metav1.ObjectMeta{
-				Labels:      make(map[string]string),
-				Annotations: make(map[string]string),
-				Name:        name,
-				Namespace:   "default",
-			},
-			Spec: batchv1.JobSpec{
-				Parallelism:           nil,
-				Completions:           nil,
-				ActiveDeadlineSeconds: nil,
-				BackoffLimit:          nil,
-				Selector:              nil,
-				ManualSelector:        nil,
-				Template: corev1.PodTemplateSpec{
-					ObjectMeta: metav1.ObjectMeta{},
-					Spec: corev1.PodSpec{
-						RestartPolicy: "OnFailure",
-						Containers: []corev1.Container{{
-							Name:  "test",
-							Image: "longfangsong/benchmarksql:1582222183",
-							Env: []corev1.EnvVar{
-								{Name: "CONN", Value: request.Spec.Conn},
-								{Name: "WAREHOUSES", Value: strconv.Itoa(int(request.Spec.Warehouses))},
-								{Name: "LOADWORKERS", Value: strconv.Itoa(int(request.Spec.LoadWorkers))},
-								{Name: "TERMINALS", Value: strconv.Itoa(int(request.Spec.Terminals))},
-							},
-						}},
-					},
-				},
-				TTLSecondsAfterFinished: nil,
-			},
+	constructJob := func(request *benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
+		job, err := request.CreateJob()
+		if err := ctrl.SetControllerReference(request, job, r.Scheme); err != nil {
+			return nil, err
 		}
-		job.Annotations["createTime"] = time.Now().Format(time.RFC3339)
-		return job, nil
+		return job, err
 	}
-	job, err := constructJob(testRequest)
+	job, err := constructJob(&benchmark)
 	if err != nil {
-		log.Error(err, "unable to construct job from template")
-		// don't bother requeuing until we get a change to the spec
-		return ctrl.Result{}, nil
+		log.Error(err, "unable to create job")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 	if err := r.Create(ctx, job); err != nil {
 		log.Error(err, "unable to create Job for CronJob", "job", job)
 		return ctrl.Result{}, err
 	}
-	return ctrl.Result{}, nil
+	return ctrl.Result{}, err
 }
 
 func (r *TpccBenchmarkReconciler) SetupWithManager(mgr ctrl.Manager) error {

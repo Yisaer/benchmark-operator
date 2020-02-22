@@ -23,3 +23,6 @@ bin
 *.swo
 *~
 /vendor
+output
+# use this filename to load docker-image when network in your `run-in-container` is not good
+temp.tar

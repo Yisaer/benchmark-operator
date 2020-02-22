@@ -16,7 +16,11 @@ limitations under the License.
 package v1alpha1
 
 import (
+	batchv1 "k8s.io/api/batch/v1"
+	"k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"strconv"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
@@ -26,8 +30,10 @@ import (
 type TpccBenchmarkSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-
+	Image       string `json:"image,omitempty"`
 	Conn        string `json:"conn,omitempty"`
+	User        string `json:"user,omitempty"`
+	Password    string `json:"password,omitempty"`
 	Warehouses  uint32 `json:"warehouses"`
 	Terminals   uint32 `json:"terminals"`
 	LoadWorkers uint32 `json:"loadworkers"`
@@ -48,6 +54,71 @@ type TpccBenchmark struct {
 
 	Spec   TpccBenchmarkSpec   `json:"spec,omitempty"`
 	Status TpccBenchmarkStatus `json:"status,omitempty"`
+}
+
+func (in *TpccBenchmark) CreateJob() (*batchv1.Job, error) {
+	ttl := int32(60)
+	result := batchv1.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      in.Name,
+			Namespace: in.Namespace,
+			// todo: add labels and annotation support
+			Labels:      nil,
+			Annotations: nil,
+		},
+		Spec: batchv1.JobSpec{
+			// todo: add selector support
+			Selector: &metav1.LabelSelector{
+				MatchLabels:      nil,
+				MatchExpressions: nil,
+			},
+			ManualSelector: nil,
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers: []v1.Container{{
+						Name:  "benchmarksql",
+						Image: in.Spec.Image,
+						// todo: check whether empty values are handled here
+						Env: []v1.EnvVar{
+							{Name: "CONN", Value: in.Spec.Conn},
+							{Name: "USER", Value: in.Spec.User},
+							{Name: "PASSWORD", Value: in.Spec.Password},
+						},
+						// todo: use this to sync benchmark result?
+						//Lifecycle: &corev1.Lifecycle{
+						//	PreStop: &corev1.Handler{},
+						//},
+						// todo: or this?
+						TerminationMessagePath:   "",
+						TerminationMessagePolicy: "",
+					}},
+					RestartPolicy: "OnFailure",
+				},
+			},
+			// I don't know why k8s use *int32 instead of plain int32 here
+			TTLSecondsAfterFinished: &ttl,
+		},
+	}
+	// todo: maybe refactor these three into one function
+	if in.Spec.Terminals != 0 {
+		result.Spec.Template.Spec.Containers[0].Env = append(result.Spec.Template.Spec.Containers[0].Env, v1.EnvVar{
+			Name:  "TERMINALS",
+			Value: strconv.Itoa(int(in.Spec.Terminals)),
+		})
+	}
+	if in.Spec.LoadWorkers != 0 {
+		result.Spec.Template.Spec.Containers[0].Env = append(result.Spec.Template.Spec.Containers[0].Env, v1.EnvVar{
+			Name:  "LOADWORKERS",
+			Value: strconv.Itoa(int(in.Spec.LoadWorkers)),
+		})
+	}
+	if in.Spec.Warehouses != 0 {
+		result.Spec.Template.Spec.Containers[0].Env = append(result.Spec.Template.Spec.Containers[0].Env, v1.EnvVar{
+			Name:  "WAREHOUSES",
+			Value: strconv.Itoa(int(in.Spec.Warehouses)),
+		})
+	}
+	return &result, nil
 }
 
 // +kubebuilder:object:root=true
