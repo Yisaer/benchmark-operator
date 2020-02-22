@@ -1,0 +1,20 @@
+# permissions to do viewer tpccbenchmarks.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tpccbenchmark-viewer-role
+rules:
+- apiGroups:
+  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  resources:
+  - tpccbenchmarks
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  resources:
+  - tpccbenchmarks/status
+  verbs:
+  - get

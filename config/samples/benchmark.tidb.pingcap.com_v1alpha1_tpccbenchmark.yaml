@@ -1,0 +1,7 @@
+apiVersion: benchmark.tidb.pingcap.com.benchmark.pingcap.com/v1alpha1
+kind: TpccBenchmark
+metadata:
+  name: tpccbenchmark-sample
+spec:
+  # Add fields here
+  foo: bar

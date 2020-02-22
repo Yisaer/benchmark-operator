@@ -1,0 +1,26 @@
+# permissions to do edit tpccbenchmarks.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tpccbenchmark-editor-role
+rules:
+- apiGroups:
+  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  resources:
+  - tpccbenchmarks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  resources:
+  - tpccbenchmarks/status
+  verbs:
+  - get
+  - patch
+  - update

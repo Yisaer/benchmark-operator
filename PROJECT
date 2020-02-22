@@ -1,0 +1,7 @@
+domain: benchmark.pingcap.com
+repo: github.com/yisaer/benchmark-operator
+resources:
+- group: benchmark.tidb.pingcap.com
+  kind: TpccBenchmark
+  version: v1alpha1
+version: "2"
