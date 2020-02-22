@@ -19,7 +19,7 @@ import (
 	"flag"
 	"os"
 
-	benchmarktidbpingcapcomv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
+	benchmarkcloudv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
 	"github.com/yisaer/benchmark-operator/controllers"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -37,7 +37,7 @@ var (
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
 
-	_ = benchmarktidbpingcapcomv1alpha1.AddToScheme(scheme)
+	_ = benchmarkcloudv1alpha1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 

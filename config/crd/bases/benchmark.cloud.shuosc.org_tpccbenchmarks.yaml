@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.5
   creationTimestamp: null
-  name: tpccbenchmarks.benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  name: tpccbenchmarks.benchmark.cloud.shuosc.org
 spec:
-  group: benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  group: benchmark.cloud.shuosc.org
   names:
     kind: TpccBenchmark
     listKind: TpccBenchmarkList

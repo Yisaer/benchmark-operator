@@ -3,7 +3,7 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: tpccbenchmarks.benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  name: tpccbenchmarks.benchmark.cloud.shuosc.org
 spec:
   conversion:
     strategy: Webhook

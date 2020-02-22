@@ -1,7 +1,7 @@
-domain: benchmark.pingcap.com
+domain: shuosc.org
 repo: github.com/yisaer/benchmark-operator
 resources:
-- group: benchmark.tidb.pingcap.com
+- group: benchmark.cloud
   kind: TpccBenchmark
   version: v1alpha1
 version: "2"

@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"github.com/go-logr/logr"
-	benchmarktidbpingcapcomv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
+	"github.com/yisaer/benchmark-operator/api/v1alpha1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -51,7 +51,7 @@ func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	log := r.Log.WithValues("benchmarksql", req.NamespacedName)
 	// your logic here
 	//ctrl.CreateOrUpdate()
-	var testRequest benchmarktidbpingcapcomv1alpha1.TpccBenchmark
+	var testRequest v1alpha1.TpccBenchmark
 	if err := r.Get(ctx, req.NamespacedName, &testRequest); err != nil {
 		log.Error(err, "unable to fetch testRequest")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
@@ -72,7 +72,7 @@ func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		conn = fmt.Sprintf("%s%s-tidb.%s.svc:%d/%s", protocol, c.Name, c.Namespace, port, *testRequest.Spec.Database)
 	}
 
-	constructJob := func(request benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
+	constructJob := func(request v1alpha1.TpccBenchmark) (*batchv1.Job, error) {
 		// We want job names for a given nominal start time to have a deterministic name to avoid the same job being created twice
 		name := fmt.Sprintf("test")
 
@@ -127,6 +127,6 @@ func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 
 func (r *TpccBenchmarkReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&benchmarktidbpingcapcomv1alpha1.TpccBenchmark{}).
+		For(&v1alpha1.TpccBenchmark{}).
 		Complete(r)
 }
