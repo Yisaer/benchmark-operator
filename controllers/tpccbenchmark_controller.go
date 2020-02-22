@@ -31,6 +31,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	jobImage = "longfangsong/benchmarksql:1582222183"
+	protocol = "jdbc:mysql://"
+)
+
 // TpccBenchmarkReconciler reconciles a TpccBenchmark object
 type TpccBenchmarkReconciler struct {
 	client.Client
@@ -51,11 +56,22 @@ func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		log.Error(err, "unable to fetch testRequest")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
+
 	var childJobs batchv1.JobList
 	if err := r.List(ctx, &childJobs); err != nil {
 		log.Error(err, "unable to list child Jobs")
 		return ctrl.Result{}, err
 	}
+
+	conn := ""
+	if testRequest.Spec.Conn != nil {
+		conn = *testRequest.Spec.Conn
+	} else {
+		port := 4000
+		c := testRequest.Spec.Cluster
+		conn = fmt.Sprintf("%s%s.%s.svc:%d", protocol, c.Name, c.Namespace, port)
+	}
+
 	constructJob := func(request benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
 		// We want job names for a given nominal start time to have a deterministic name to avoid the same job being created twice
 		name := fmt.Sprintf("test")
@@ -80,9 +96,9 @@ func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 						RestartPolicy: "OnFailure",
 						Containers: []corev1.Container{{
 							Name:  "test",
-							Image: "longfangsong/benchmarksql:1582222183",
+							Image: jobImage,
 							Env: []corev1.EnvVar{
-								{Name: "CONN", Value: request.Spec.Conn},
+								{Name: "CONN", Value: conn},
 								{Name: "WAREHOUSES", Value: strconv.Itoa(int(request.Spec.Warehouses))},
 								{Name: "LOADWORKERS", Value: strconv.Itoa(int(request.Spec.LoadWorkers))},
 								{Name: "TERMINALS", Value: strconv.Itoa(int(request.Spec.Terminals))},

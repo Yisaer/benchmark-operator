@@ -27,10 +27,29 @@ type TpccBenchmarkSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Conn        string `json:"conn,omitempty"`
-	Warehouses  uint32 `json:"warehouses"`
-	Terminals   uint32 `json:"terminals"`
-	LoadWorkers uint32 `json:"loadworkers"`
+	// Conn describe the mysql host connection manually
+	// +optional
+	Conn        *string `json:"conn,omitempty"`
+	Warehouses  uint32  `json:"warehouses"`
+	Terminals   uint32  `json:"terminals"`
+	LoadWorkers uint32  `json:"loadworkers"`
+
+	// Cluster describe the TidbCluster Ref
+	// +optional
+	Cluster TidbClusterRef `json:"cluster,omitempty"`
+
+	// Database describe the Target Database
+	// +optional
+	Database *string `json:"database,omitempty"`
+
+	// Username describe the Username to connect the database
+	// If not set, the default is root
+	// +optional
+	Username string `json:"user,omitempty"`
+
+	// Password describe the password to connect the database
+	// If not set, the default is empty
+	Password string `json:"password,omitempty"`
 }
 
 // TpccBenchmarkStatus defines the observed state of TpccBenchmark
@@ -57,6 +76,17 @@ type TpccBenchmarkList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []TpccBenchmark `json:"items"`
+}
+
+// TidbClusterRef describe the target location of tidbcluster
+type TidbClusterRef struct {
+	// Namespace is the namespace that TidbCluster object locates,
+	// default to the same namespace where the obj created
+	// +optional
+	Namespace string `json:"namespace,omitempty"`
+
+	// Name is the name of TidbCluster object
+	Name string `json:"name"`
 }
 
 func init() {

@@ -34,14 +34,39 @@ spec:
         spec:
           description: TpccBenchmarkSpec defines the desired state of TpccBenchmark
           properties:
+            cluster:
+              description: Cluster describe the TidbCluster Ref
+              properties:
+                name:
+                  description: Name is the name of TidbCluster object
+                  type: string
+                namespace:
+                  description: Namespace is the namespace that TidbCluster object
+                    locates, default to the same namespace where the obj created
+                  type: string
+              required:
+              - name
+              type: object
             conn:
+              description: Conn describe the mysql host connection manually
+              type: string
+            database:
+              description: Database describe the Target Database
               type: string
             loadworkers:
               format: int32
               type: integer
+            password:
+              description: Password describe the password to connect the database
+                If not set, the default is empty
+              type: string
             terminals:
               format: int32
               type: integer
+            user:
+              description: Username describe the Username to connect the database
+                If not set, the default is root
+              type: string
             warehouses:
               format: int32
               type: integer
