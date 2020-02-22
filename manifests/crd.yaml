@@ -1,0 +1,274 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: benchmark-operator-system
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: tpccbenchmarks.benchmark.cloud.shuosc.org
+spec:
+  group: benchmark.cloud.shuosc.org
+  names:
+    kind: TpccBenchmark
+    listKind: TpccBenchmarkList
+    plural: tpccbenchmarks
+    singular: tpccbenchmark
+  scope: Namespaced
+  validation:
+    openAPIV3Schema:
+      description: TpccBenchmark is the Schema for the tpccbenchmarks API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: TpccBenchmarkSpec defines the desired state of TpccBenchmark
+          properties:
+            cluster:
+              description: Cluster describe the TidbCluster Ref
+              properties:
+                name:
+                  description: Name is the name of TidbCluster object
+                  type: string
+                namespace:
+                  description: Namespace is the namespace that TidbCluster object
+                    locates, default to the same namespace where the obj created
+                  type: string
+              required:
+              - name
+              type: object
+            conn:
+              description: Conn describe the mysql host connection manually
+              type: string
+            database:
+              description: Database describe the Target Database
+              type: string
+            loadworkers:
+              format: int32
+              type: integer
+            password:
+              description: Password describe the password to connect the database
+                If not set, the default is empty
+              type: string
+            terminals:
+              format: int32
+              type: integer
+            user:
+              description: Username describe the Username to connect the database
+                If not set, the default is root
+              type: string
+            warehouses:
+              format: int32
+              type: integer
+          required:
+          - loadworkers
+          - terminals
+          - warehouses
+          type: object
+        status:
+          description: TpccBenchmarkStatus defines the observed state of TpccBenchmark
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: benchmark-operator-leader-election-role
+  namespace: benchmark-operator-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - configmaps/status
+  verbs:
+  - get
+  - update
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: benchmark-operator-manager-role
+rules:
+- apiGroups:
+  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  resources:
+  - tpccbenchmarks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  resources:
+  - tpccbenchmarks/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: benchmark-operator-proxy-role
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: benchmark-operator-leader-election-rolebinding
+  namespace: benchmark-operator-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: benchmark-operator-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: benchmark-operator-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: benchmark-operator-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: benchmark-operator-manager-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: benchmark-operator-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: benchmark-operator-proxy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: benchmark-operator-proxy-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: benchmark-operator-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: benchmark-operator-controller-manager-metrics-service
+  namespace: benchmark-operator-system
+spec:
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: benchmark-operator-controller-manager
+  namespace: benchmark-operator-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=10
+        image: gcr.io/kubebuilder/kube-rbac-proxy:v0.4.1
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+      - args:
+        - --metrics-addr=127.0.0.1:8080
+        - --enable-leader-election
+        command:
+        - /manager
+        image: controller:latest
+        name: manager
+        resources:
+          limits:
+            cpu: 100m
+            memory: 30Mi
+          requests:
+            cpu: 100m
+            memory: 20Mi
+      terminationGracePeriodSeconds: 10

@@ -5,7 +5,7 @@ metadata:
   name: tpccbenchmark-editor-role
 rules:
 - apiGroups:
-  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  - benchmark.cloud.shuosc.org
   resources:
   - tpccbenchmarks
   verbs:
@@ -17,7 +17,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
+  - benchmark.cloud.shuosc.org
   resources:
   - tpccbenchmarks/status
   verbs:

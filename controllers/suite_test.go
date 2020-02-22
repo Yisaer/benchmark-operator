@@ -22,7 +22,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	benchmarktidbpingcapcomv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
+	benchmarkcloudv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -60,7 +60,7 @@ var _ = BeforeSuite(func(done Done) {
 	Expect(err).ToNot(HaveOccurred())
 	Expect(cfg).ToNot(BeNil())
 
-	err = benchmarktidbpingcapcomv1alpha1.AddToScheme(scheme.Scheme)
+	err = benchmarkcloudv1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme
