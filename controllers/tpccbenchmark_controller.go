@@ -36,7 +36,7 @@ const (
 	protocol = "jdbc:mysql://"
 )
 
-func CreateJob(in *benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
+func createJob(in *benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
 	result := batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      in.Name,
@@ -117,7 +117,7 @@ func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 	constructJob := func(request *benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
-		job, err := CreateJob(request)
+		job, err := createJob(request)
 		if err := ctrl.SetControllerReference(request, job, r.Scheme); err != nil {
 			return nil, err
 		}

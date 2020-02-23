@@ -1,4 +1,4 @@
-apiVersion: benchmark.tidb.pingcap.com.benchmark.pingcap.com/v1alpha1
+apiVersion: benchmark.cloud.shuosc.org/v1alpha1
 kind: TpccBenchmark
 metadata:
   name: tpccbenchmark-sample
