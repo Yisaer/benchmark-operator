@@ -1,0 +1,20 @@
+# permissions to do viewer sysbenchmarks.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sysbenchmark-viewer-role
+rules:
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - sysbenchmarks
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - sysbenchmarks/status
+  verbs:
+  - get

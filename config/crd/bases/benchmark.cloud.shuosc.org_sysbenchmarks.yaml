@@ -6,18 +6,18 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.2.4
   creationTimestamp: null
-  name: tpccbenchmarks.benchmark.cloud.shuosc.org
+  name: sysbenchmarks.benchmark.cloud.shuosc.org
 spec:
   group: benchmark.cloud.shuosc.org
   names:
-    kind: TpccBenchmark
-    listKind: TpccBenchmarkList
-    plural: tpccbenchmarks
-    singular: tpccbenchmark
+    kind: SysBenchmark
+    listKind: SysBenchmarkList
+    plural: sysbenchmarks
+    singular: sysbenchmark
   scope: Namespaced
   validation:
     openAPIV3Schema:
-      description: TpccBenchmark is the Schema for the tpccbenchmarks API
+      description: SysBenchmark is the Schema for the sysbenchmarks API
       properties:
         apiVersion:
           description: 'APIVersion defines the versioned schema of this representation
@@ -32,51 +32,44 @@ spec:
         metadata:
           type: object
         spec:
-          description: TpccBenchmarkSpec defines the desired state of TpccBenchmark
+          description: SysBenchmarkSpec defines the desired state of SysBenchmark
           properties:
-            cluster:
-              description: Cluster describe the TidbCluster Ref
-              properties:
-                name:
-                  description: Name is the name of TidbCluster object
-                  type: string
-                namespace:
-                  description: Namespace is the namespace that TidbCluster object
-                    locates, default to the same namespace where the obj created
-                  type: string
-              required:
-              - name
-              type: object
-            conn:
-              description: Conn describe the mysql host connection manually
+            host:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "make" to regenerate code after modifying this file'
               type: string
-            database:
-              description: Database describe the Target Database
+            password:
               type: string
-            loadworkers:
+            port:
+              type: integer
+            reportinterval:
               format: int32
               type: integer
-            password:
-              description: Password describe the password to connect the database
-                If not set, the default is empty
-              type: string
-            terminals:
+            tablescount:
+              format: int32
+              type: integer
+            tablesize:
+              format: int32
+              type: integer
+            threads:
+              format: int32
+              type: integer
+            time:
               format: int32
               type: integer
             user:
-              description: Username describe the Username to connect the database
-                If not set, the default is root
               type: string
-            warehouses:
-              format: int32
-              type: integer
           required:
-          - loadworkers
-          - terminals
-          - warehouses
+          - host
+          - port
+          - reportinterval
+          - tablescount
+          - tablesize
+          - threads
+          - time
           type: object
         status:
-          description: TpccBenchmarkStatus defines the observed state of TpccBenchmark
+          description: SysBenchmarkStatus defines the observed state of SysBenchmark
           type: object
       type: object
   version: v1alpha1

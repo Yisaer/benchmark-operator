@@ -1,0 +1,26 @@
+# permissions to do edit sysbenchmarks.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sysbenchmark-editor-role
+rules:
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - sysbenchmarks
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - sysbenchmarks/status
+  verbs:
+  - get
+  - patch
+  - update

@@ -1,0 +1,14 @@
+apiVersion: benchmark.cloud.shuosc.org/v1alpha1
+kind: SysBenchmark
+metadata:
+  name: sysbenchmark-sample
+spec:
+  host: test-mysql-svc
+  port: 3306
+  user: sbtest
+  password: password
+  tablesize: 100000
+  tablescount: 24
+  threads: 1 # todo: seperate this into prepare.threads and run.threads
+  time: 1
+  reportinterval: 2
