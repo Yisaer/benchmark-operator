@@ -19,7 +19,6 @@ import (
 	"context"
 	"github.com/go-logr/logr"
 	"github.com/yisaer/benchmark-operator/api/v1alpha1"
-	benchmarktidbpingcapcomv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
@@ -36,7 +35,7 @@ const (
 	protocol = "jdbc:mysql://"
 )
 
-func createJob(in *benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
+func createJob(in *v1alpha1.TpccBenchmark) (*batchv1.Job, error) {
 	result := batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      in.Name,
@@ -111,12 +110,12 @@ type TpccBenchmarkReconciler struct {
 func (r *TpccBenchmarkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 	log := r.Log.WithValues("benchmarksql", req.NamespacedName)
-	var benchmark benchmarktidbpingcapcomv1alpha1.TpccBenchmark
+	var benchmark v1alpha1.TpccBenchmark
 	if err := r.Get(ctx, req.NamespacedName, &benchmark); err != nil {
 		log.Error(err, "unable to fetch benchmark")
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
-	constructJob := func(request *benchmarktidbpingcapcomv1alpha1.TpccBenchmark) (*batchv1.Job, error) {
+	constructJob := func(request *v1alpha1.TpccBenchmark) (*batchv1.Job, error) {
 		job, err := createJob(request)
 		if err := ctrl.SetControllerReference(request, job, r.Scheme); err != nil {
 			return nil, err
