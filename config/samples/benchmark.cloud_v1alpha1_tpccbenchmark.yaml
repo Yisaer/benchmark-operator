@@ -3,5 +3,11 @@ kind: TpccBenchmark
 metadata:
   name: tpccbenchmark-sample
 spec:
-  # Add fields here
-  foo: bar
+  image: longfangsong/benchmarksql:v0
+  conn: jdbc:mysql://test-mysql-svc:3306/tpcc?useSSL=false&useServerPrepStmts=true&useConfigs=maxPerformance&allowPublicKeyRetrieval=true
+  user: test
+  # todo: put password in Secret
+  password: test
+  warehouses: 2
+  loadworkers: 3
+  terminals: 3
