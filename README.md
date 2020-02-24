@@ -6,4 +6,4 @@ It is maintained by the [#sig-cloud](https://github.com/orgs/shuosc/teams/sig-cl
 
 ## SIG-Cloud meeting
 
-https://zoom.com.cn/j/6035133283 Mondays at 16:30 (UTC+8) (weekly)
+https://zoom.com.cn/j/6035133283 Mondays at 18:30 (UTC+8) (weekly)
