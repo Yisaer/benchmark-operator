@@ -7,6 +7,26 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - databasebenchmarkprepares
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - databasebenchmarkprepares/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
   - benchmark.tidb.pingcap.com.benchmark.pingcap.com
   resources:
   - tpccbenchmarks
