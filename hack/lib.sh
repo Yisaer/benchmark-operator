@@ -85,6 +85,7 @@ function hack::ensure_kustomize() {
     return 0
   fi
   curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash > /dev/null
+  touch $KUSTOMIZE_BIN
   mv ./kustomize $KUSTOMIZE_BIN
   chmod +x $KUSTOMIZE_BIN
 }

@@ -1,0 +1,7 @@
+apiVersion: benchmark.cloud.shuosc.org/v1alpha1
+kind: DataBaseBenchmarkPrepare
+metadata:
+  name: databasebenchmarkprepare-sample
+spec:
+  # Add fields here
+  foo: bar

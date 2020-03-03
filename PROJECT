@@ -4,4 +4,7 @@ resources:
 - group: benchmark.cloud
   kind: TpccBenchmark
   version: v1alpha1
+- group: benchmark.cloud
+  kind: DataBaseBenchmarkPrepare
+  version: v1alpha1
 version: "2"

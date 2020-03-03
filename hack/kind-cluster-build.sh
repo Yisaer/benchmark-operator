@@ -22,6 +22,7 @@ source $ROOT/hack/lib.sh
 
 hack::ensure_kubectl
 hack::ensure_kind
+hack::ensure_kustomize
 
 usage() {
   cat <<EOF
