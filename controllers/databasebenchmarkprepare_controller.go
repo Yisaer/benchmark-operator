@@ -17,13 +17,14 @@ package controllers
 
 import (
 	"context"
+	batchv1 "k8s.io/api/batch/v1"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	benchmarkcloudv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
+	v1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
 )
 
 // DataBaseBenchmarkPrepareReconciler reconciles a DataBaseBenchmarkPrepare object
@@ -37,16 +38,35 @@ type DataBaseBenchmarkPrepareReconciler struct {
 // +kubebuilder:rbac:groups=benchmark.cloud.shuosc.org,resources=databasebenchmarkprepares/status,verbs=get;update;patch
 
 func (r *DataBaseBenchmarkPrepareReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
-	_ = r.Log.WithValues("databasebenchmarkprepare", req.NamespacedName)
-
-	// your logic here
-
+	ctx := context.Background()
+	log := r.Log.WithValues("databasebenchmarkprepare", req.NamespacedName)
+	constructJob := func(request *v1alpha1.DataBaseBenchmarkPrepare) (*batchv1.Job, error) {
+		job, err := request.Spec.Prepares[0].CreateJob(request.Spec.Host, request.Spec.Host, request.Spec.User, request.Spec.Password)
+		if err := ctrl.SetControllerReference(request, job, r.Scheme); err != nil {
+			return nil, err
+		}
+		return job, err
+	}
+	var benchmark v1alpha1.DataBaseBenchmarkPrepare
+	if err := r.Get(ctx, req.NamespacedName, &benchmark); err != nil {
+		log.Error(err, "unable to fetch benchmark")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+	job, err := constructJob(&benchmark)
+	if err != nil {
+		log.Error(err, "unable to create Job", "job", job)
+		return ctrl.Result{}, err
+	}
+	if err := r.Create(ctx, job); err != nil {
+		log.Error(err, "unable to create Job", "job", job)
+		return ctrl.Result{}, err
+	}
 	return ctrl.Result{}, nil
 }
 
 func (r *DataBaseBenchmarkPrepareReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&benchmarkcloudv1alpha1.DataBaseBenchmarkPrepare{}).
+		Owns(&batchv1.Job{}).
+		For(&v1alpha1.DataBaseBenchmarkPrepare{}).
 		Complete(r)
 }

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-mysql
+  labels:
+    run: test-mysql
+spec:
+  selector:
+    matchLabels:
+      run: test-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: test-mysql
+    spec:
+      containers:
+        - name: test-mysql
+          image: mysql:5.7
+          env:
+            - name: MYSQL_USER
+              value: "test"
+            - name: MYSQL_PASSWORD
+              value: "test"
+            - name: MYSQL_ROOT_PASSWORD
+              value: "test"
+            - name: MYSQL_DATABASE
+              value: "sbtest"
+          ports:
+            - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-mysql-svc
+spec:
+  selector:
+    run: test-mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
