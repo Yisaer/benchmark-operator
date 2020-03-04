@@ -1,10 +1,8 @@
-
----
+# permissions to do edit databasebenchmarkprepares.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  creationTimestamp: null
-  name: manager-role
+  name: databasebenchmarkprepare-editor-role
 rules:
 - apiGroups:
   - benchmark.cloud.shuosc.org
@@ -22,26 +20,6 @@ rules:
   - benchmark.cloud.shuosc.org
   resources:
   - databasebenchmarkprepares/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
-  resources:
-  - tpccbenchmarks
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - benchmark.tidb.pingcap.com.benchmark.pingcap.com
-  resources:
-  - tpccbenchmarks/status
   verbs:
   - get
   - patch

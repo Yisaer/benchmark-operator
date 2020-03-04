@@ -1,0 +1,17 @@
+apiVersion: benchmark.cloud.shuosc.org/v1alpha1
+kind: DataBaseBenchmarkPrepare
+metadata:
+  name: benchmark-prepare-sample
+spec:
+  host: test-mysql-svc
+  port: 3306
+  user: test
+  password: test
+  prepares:
+    - type: sysbench
+      database: sbtest
+      image: severalnines/sysbench
+      params:
+        tablesize: "100000"
+        tablescount: "24"
+        threads: "1"
