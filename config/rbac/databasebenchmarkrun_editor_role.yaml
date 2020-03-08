@@ -1,0 +1,26 @@
+# permissions to do edit databasebenchmarkruns.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: databasebenchmarkrun-editor-role
+rules:
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - databasebenchmarkruns
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - databasebenchmarkruns/status
+  verbs:
+  - get
+  - patch
+  - update
