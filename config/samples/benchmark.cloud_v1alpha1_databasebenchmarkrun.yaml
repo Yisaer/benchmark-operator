@@ -12,5 +12,8 @@ spec:
       database: sbtest
       image: severalnines/sysbench
       params:
-        threads: 16
-        report-interval: 10
+        tablesize: "100000"
+        tablescount: "24"
+        threads: "16"
+        report-interval: "10"
+        time: "60"

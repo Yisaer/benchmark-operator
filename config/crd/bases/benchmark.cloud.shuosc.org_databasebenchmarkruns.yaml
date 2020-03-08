@@ -35,10 +35,40 @@ spec:
         spec:
           description: DataBaseBenchmarkRunSpec defines the desired state of DataBaseBenchmarkRun
           properties:
-            foo:
-              description: Foo is an example field of DataBaseBenchmarkRun. Edit DataBaseBenchmarkRun_types.go
-                to remove/update
+            host:
               type: string
+            password:
+              type: string
+            port:
+              type: integer
+            runs:
+              items:
+                properties:
+                  database:
+                    type: string
+                  image:
+                    type: string
+                  params:
+                    additionalProperties:
+                      type: string
+                    type: object
+                  type:
+                    type: string
+                required:
+                - database
+                - image
+                - params
+                - type
+                type: object
+              type: array
+            user:
+              type: string
+          required:
+          - host
+          - password
+          - port
+          - runs
+          - user
           type: object
         status:
           description: DataBaseBenchmarkRunStatus defines the observed state of DataBaseBenchmarkRun

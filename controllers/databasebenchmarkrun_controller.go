@@ -17,13 +17,14 @@ package controllers
 
 import (
 	"context"
+	batchv1 "k8s.io/api/batch/v1"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	benchmarkcloudv1alpha1 "github.com/yisaer/benchmark-operator/api/v1alpha1"
+	"github.com/yisaer/benchmark-operator/api/v1alpha1"
 )
 
 // DataBaseBenchmarkRunReconciler reconciles a DataBaseBenchmarkRun object
@@ -37,16 +38,35 @@ type DataBaseBenchmarkRunReconciler struct {
 // +kubebuilder:rbac:groups=benchmark.cloud.shuosc.org,resources=databasebenchmarkruns/status,verbs=get;update;patch
 
 func (r *DataBaseBenchmarkRunReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
-	_ = context.Background()
-	_ = r.Log.WithValues("databasebenchmarkrun", req.NamespacedName)
-
-	// your logic here
-
+	ctx := context.Background()
+	log := r.Log.WithValues("databasebenchmarkrun", req.NamespacedName)
+	constructJob := func(request *v1alpha1.DataBaseBenchmarkRun) (*batchv1.Job, error) {
+		job, err := request.Spec.Runs[0].CreateJob(request.Spec.Host, request.Spec.Host, request.Spec.User, request.Spec.Password)
+		if err := ctrl.SetControllerReference(request, job, r.Scheme); err != nil {
+			return nil, err
+		}
+		return job, err
+	}
+	var benchmark v1alpha1.DataBaseBenchmarkRun
+	if err := r.Get(ctx, req.NamespacedName, &benchmark); err != nil {
+		log.Error(err, "unable to fetch benchmark")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+	job, err := constructJob(&benchmark)
+	if err != nil {
+		log.Error(err, "unable to create Job", "job", job)
+		return ctrl.Result{}, err
+	}
+	if err := r.Create(ctx, job); err != nil {
+		log.Error(err, "unable to create Job", "job", job)
+		return ctrl.Result{}, err
+	}
 	return ctrl.Result{}, nil
 }
 
 func (r *DataBaseBenchmarkRunReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&benchmarkcloudv1alpha1.DataBaseBenchmarkRun{}).
+		Owns(&batchv1.Job{}).
+		For(&v1alpha1.DataBaseBenchmarkRun{}).
 		Complete(r)
 }
