@@ -22,13 +22,20 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type Run struct {
+	Type     string            `json:"type"`
+	Database string            `json:"database"`
+	Image    string            `json:"image"`
+	Params   map[string]string `json:"params"`
+}
+
 // DataBaseBenchmarkRunSpec defines the desired state of DataBaseBenchmarkRun
 type DataBaseBenchmarkRunSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of DataBaseBenchmarkRun. Edit DataBaseBenchmarkRun_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Host     string `json:"host"`
+	Port     uint16 `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Runs     []Run  `json:"runs"`
 }
 
 // DataBaseBenchmarkRunStatus defines the observed state of DataBaseBenchmarkRun

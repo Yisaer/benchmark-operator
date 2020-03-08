@@ -6,8 +6,8 @@ spec:
   host: test-mysql-svc
   port: 3306
   user: test
-  password: xxx
-  prepares:
+  password: test
+  runs:
     - type: sysbench
       database: sbtest
       image: severalnines/sysbench
