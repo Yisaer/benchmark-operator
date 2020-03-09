@@ -27,6 +27,26 @@ rules:
   - patch
   - update
 - apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - databasebenchmarkruns
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - benchmark.cloud.shuosc.org
+  resources:
+  - databasebenchmarkruns/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
   - benchmark.tidb.pingcap.com.benchmark.pingcap.com
   resources:
   - tpccbenchmarks

@@ -1,0 +1,19 @@
+apiVersion: benchmark.cloud.shuosc.org/v1alpha1
+kind: DataBaseBenchmarkRun
+metadata:
+  name: benchmark-run-sample
+spec:
+  host: test-mysql-svc
+  port: 3306
+  user: test
+  password: test
+  runs:
+    - type: sysbench
+      database: sbtest
+      image: severalnines/sysbench
+      params:
+        tablesize: "100000"
+        tablescount: "24"
+        threads: "16"
+        report-interval: "10"
+        time: "60"

@@ -80,6 +80,14 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "DataBaseBenchmarkPrepare")
 		os.Exit(1)
 	}
+	if err = (&controllers.DataBaseBenchmarkRunReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("DataBaseBenchmarkRun"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "DataBaseBenchmarkRun")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")
