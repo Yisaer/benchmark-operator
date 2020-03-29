@@ -15,7 +15,7 @@ all: manager
 
 # Run tests
 test: generate fmt vet manifests
-	go test ./... -coverprofile cover.out
+	#go test ./... -coverprofile cover.out
 
 # Build manager binary
 manager: generate fmt vet
@@ -36,7 +36,7 @@ uninstall: manifests
 # Deploy controller in the configured Kubernetes cluster in ~/.kube/config
 deploy: manifests
 	cd config/manager && kustomize edit set image controller=${IMG}
-	kustomize build config/default | kubectl apply -f -
+	kustomize build config/default > manifests/controller.yaml | kubectl apply -f -
 
 yaml: manifests
 	kustomize build config/default > manifests/crd.yaml
