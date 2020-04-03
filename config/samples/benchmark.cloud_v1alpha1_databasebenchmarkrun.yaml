@@ -3,10 +3,10 @@ kind: DataBaseBenchmarkRun
 metadata:
   name: benchmark-run-sample
 spec:
-  host: test-mysql-svc
+  host: demo-mysql-svc
   port: 3306
-  user: test
-  password: test
+  user: demo
+  password: demo
   runs:
     - type: sysbench
       database: sbtest
