@@ -3,13 +3,13 @@ kind: DataBaseBenchmarkPrepare
 metadata:
   name: benchmark-prepare-sample
 spec:
-  host: test-mysql-svc
+  host: demo-mysql-svc
   port: 3306
-  user: test
-  password: test
+  user: demo
+  password: demo
   prepares:
     - type: sysbench
-      database: sbtest
+      database: sbsbtest
       image: severalnines/sysbench
       params:
         tablesize: "100000"

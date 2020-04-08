@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-mysql
+  labels:
+    run: demo-mysql
+spec:
+  selector:
+    matchLabels:
+      run: demo-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: demo-mysql
+    spec:
+      containers:
+        - name: demo-mysql
+          image: mysql:5.7
+          env:
+            - name: MYSQL_USER
+              value: "demo"
+            - name: MYSQL_PASSWORD
+              value: "demo"
+            - name: MYSQL_ROOT_PASSWORD
+              value: "demo"
+            - name: MYSQL_DATABASE
+              value: "sbtest"
+          ports:
+            - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-mysql-svc
+spec:
+  selector:
+    run: demo-mysql
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
